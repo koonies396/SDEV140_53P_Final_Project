@@ -28,7 +28,7 @@ interest_rate_label.grid(row=1, column=0)
 interest_rate_entry = tk.Entry(root)
 interest_rate_entry.grid(row=1, column=1)
 
-loan_term_label = tk.Label(root, text="Loan Term (years):")
+loan_term_label = tk.Label(root, text="Loan Term (# of years):")
 loan_term_label.grid(row=2, column=0)
 loan_term_entry = tk.Entry(root)
 loan_term_entry.grid(row=2, column=1)
