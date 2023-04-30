@@ -1,1 +1,1 @@
-print("help")
+print("do something else")
