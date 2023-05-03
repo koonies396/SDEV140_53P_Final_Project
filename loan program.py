@@ -38,21 +38,39 @@ monthly_payment_label.grid(row=3, column=0)
 monthly_payment_entry = tk.Entry(root)
 monthly_payment_entry.grid(row=3, column=1)
 
+# Set up the grid row and column configuration
+root.grid_rowconfigure(4, weight=1)
+root.grid_columnconfigure(0, weight=1)
+root.grid_columnconfigure(1, weight=1)
+
 # table generated
 amortization_table = tk.ttk.Treeview(root)
 amortization_table["columns"]=("Payment", "Interest Paid", "Principal Paid", "Remaining Balance")
-amortization_table.column("#0", width=0, stretch=tk.NO)
-amortization_table.column("Payment", anchor=tk.CENTER, width=100)
-amortization_table.column("Interest Paid", anchor=tk.CENTER, width=150)
-amortization_table.column("Principal Paid", anchor=tk.CENTER, width=150)
-amortization_table.column("Remaining Balance", anchor=tk.CENTER, width=200)
+amortization_table.column("#0", width=0, stretch=tk.YES)
+amortization_table.column("Payment", anchor=tk.CENTER, width=0, stretch=tk.YES)
+amortization_table.column("Interest Paid", anchor=tk.CENTER, width=0, stretch=tk.YES)
+amortization_table.column("Principal Paid", anchor=tk.CENTER, width=0, stretch=tk.YES)
+amortization_table.column("Remaining Balance", anchor=tk.CENTER, width=0, stretch=tk.YES)
 amortization_table.heading("Payment", text="Payment")
 amortization_table.heading("Interest Paid", text="Interest Paid")
 amortization_table.heading("Principal Paid", text="Principal Paid")
 amortization_table.heading("Remaining Balance", text="Remaining Balance")
-amortization_table.grid(row=4, column=0, columnspan=2)
+amortization_table.grid(row=4, column=0, columnspan=2, sticky="nsew")
+
+# Set the minimum size of the root window
+root.minsize(500, 300)
 
 calculate_button = tk.Button(root, text="Calculate", command=calculate_amortization)
 calculate_button.grid(row=5, column=0, columnspan=2)
+
+def clear_table():
+    for item in amortization_table.get_children():
+        amortization_table.delete(item)
+
+
+#Clear the treeview list items
+clear_button = tk.Button(root, text="Clear", command=clear_table)
+clear_button.grid(row=5, column=1, columnspan=2)
+
 
 root.mainloop()
