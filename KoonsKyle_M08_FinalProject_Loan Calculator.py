@@ -99,7 +99,7 @@ button_width = 10
 calculate_button = tk.Button(root, text="Calculate", command=calculate_amortization, width=button_width, anchor="center")
 calculate_button.grid(row=7, column=0, columnspan=1, padx=5, pady=10, sticky="ew")
 
-#Clear the treeview list items
+# Clear the treeview list items
 clear_button = tk.Button(root, text="Clear", command=clear_table, width=button_width, anchor="center")
 clear_button.grid(row=7, column=1, columnspan=1, padx=5, pady=10, sticky="ew")
 

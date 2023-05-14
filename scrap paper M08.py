@@ -5,34 +5,25 @@ from tkinter.filedialog import asksaveasfile
 from tkinter import filedialog
 import pandas as pd
 
-from decimal import Decimal, ROUND_HALF_UP
-
-# this the creation of all the data in the treeview
-# it takes input values and calculates the loan data accordingly
 def calculate_amortization():
     try:
-        principal = Decimal(principal_entry.get())
-        interest_rate = Decimal(interest_rate_entry.get())
-        if interest_rate > 1:
-            # Interest rate is an APR
-            interest_rate /= 100
-        monthly_interest_rate = interest_rate / 12
+        principal = float(principal_entry.get())
+        interest_rate = float(interest_rate_entry.get()) / (100 * 12)
         loan_term_years = int(loan_term_entry.get())
         loan_term = loan_term_years * 12
-        monthly_payment = Decimal(npf.pmt(monthly_interest_rate, loan_term, principal))
+        monthly_payment = npf.pmt(.04 / 12, loan_term_years * 12,principal)
         monthly_payment = abs(monthly_payment)
-        monthly_payment = monthly_payment.quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP)
+        monthly_payment = round(monthly_payment, 2)
         remaining_balance = principal
         for i in range(1, loan_term + 1):
-            interest_paid = remaining_balance * monthly_interest_rate
+            interest_paid = remaining_balance * interest_rate
             principal_paid = monthly_payment - interest_paid
             remaining_balance -= principal_paid
-            remaining_balance = remaining_balance.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
             if remaining_balance < 0:
                 remaining_balance = 0
-            amortization_table.insert("", tk.END, values=(i, "{:.6f}".format(monthly_payment), "{:.2f}".format(interest_paid), "{:.2f}".format(principal_paid), "{:.2f}".format(remaining_balance)))
+            amortization_table.insert("", tk.END, values=(i, "{:.2f}".format(monthly_payment), "{:.2f}".format(interest_paid), "{:.2f}".format(principal_paid), "{:.2f}".format(remaining_balance)))
     except ValueError:
-        # create a new window to display the error message
+        # create a new top-level window to display the error message
         error_window = tk.Toplevel(root)
         error_window.title("Error")
         error_label = tk.Label(error_window, text="Please enter valid numbers in all fields.")
@@ -42,23 +33,30 @@ def calculate_amortization():
 root = tk.Tk()
 root.title("Loan Calculator")
 
-# label creation
 principal_label = tk.Label(root, text="Principal:")
 principal_label.grid(row=0, column=0)
 principal_entry = tk.Entry(root)
 principal_entry.grid(row=0, column=1)
+
 principal_label = tk.Label(root, text="Loan Amount:")
 principal_label.grid(row=0, column=0)
 principal_entry = tk.Entry(root)
 principal_entry.grid(row=0, column=1)
+
 interest_rate_label = tk.Label(root, text="Interest Rate (%):")
 interest_rate_label.grid(row=1, column=0)
 interest_rate_entry = tk.Entry(root)
 interest_rate_entry.grid(row=1, column=1)
+
 loan_term_label = tk.Label(root, text="Loan Term (# of years):")
 loan_term_label.grid(row=2, column=0)
 loan_term_entry = tk.Entry(root)
 loan_term_entry.grid(row=2, column=1)
+
+#monthly_payment_label = tk.Label(root, text="# Of Monthly Payments:")
+#monthly_payment_label.grid(row=3, column=0)
+#monthly_payment_entry = tk.Entry(root)
+#monthly_payment_entry.grid(row=3, column=1)
 
 # Set up the grid row and column configuration
 root.grid_rowconfigure(4, weight=1)
@@ -87,15 +85,15 @@ amortization_table.grid(row=4, column=0, columnspan=3, sticky="nsew")
 # Set the minimum size of the root window
 root.minsize(500, 300)
 
-# function runs to clear the table data when the 'clear' button is hit
 def clear_table():
     for item in amortization_table.get_children():
         amortization_table.delete(item)
 
-#set button width
 button_width = 10
 
 # calculate button
+button_width = 10
+
 calculate_button = tk.Button(root, text="Calculate", command=calculate_amortization, width=button_width, anchor="center")
 calculate_button.grid(row=7, column=0, columnspan=1, padx=5, pady=10, sticky="ew")
 
@@ -103,13 +101,12 @@ calculate_button.grid(row=7, column=0, columnspan=1, padx=5, pady=10, sticky="ew
 clear_button = tk.Button(root, text="Clear", command=clear_table, width=button_width, anchor="center")
 clear_button.grid(row=7, column=1, columnspan=1, padx=5, pady=10, sticky="ew")
 
-# save file function
 def save_file():
     data = []
     for child in amortization_table.get_children():
         item = amortization_table.item(child)['values']
         data.append(item)
-    # write data to file
+    
     df = pd.DataFrame(data, columns=["Payment", "Monthly Payment", "Interest Paid", "Principal Paid", "Remaining Balance"])
     file = filedialog.asksaveasfile(initialfile="Untitled.xlsx", defaultextension='.xlsx', 
                                   filetypes=[("Excel Workbook","*.xlsx"), ("All Files",".*")])
